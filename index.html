@@ -1,0 +1,241 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keywords" content="table">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp, no-store, no-cache, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <style>
+        html {
+            height: 100%;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        ul,
+        li {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .select {
+            width: 300px;
+            padding: 10px;
+            background: #eee;
+            height: 100%;
+        }
+
+        .selectUl li a {
+            width: 100%;
+            display: block;
+            color: #333;
+            padding: 5px 0;
+            text-decoration: none;
+            /* margin: 0; */
+            /* height: 30px;
+            line-height: 30px; */
+            /* cursor: pointer;
+            background: #fff; */
+        }
+
+        /* .selectUl li:hover {
+            background: #ddd;
+        } */
+
+        .selectUl li .accordion {
+            padding-left: 10px;
+            display: none;
+        }
+
+        .imgs {
+            height: 10px;
+            width: 10px;
+        }
+
+        .block {
+            display: block !important;
+        }
+    </style>
+
+</head>
+
+
+<body>
+    <div class="select" id="selectId">
+
+    </div>
+</body>
+<script>
+    var list = [
+        {
+            id: 1,
+            name: '测试',
+            children: [
+                {
+                    id: 11,
+                    name: '测试1',
+                    children: [
+                        {
+                            id: 112,
+                            name: 'cs1'
+                        }
+                    ]
+                },
+                {
+                    id: 12,
+                    name: '测试2'
+                }
+            ]
+        },
+        {
+            id: 2,
+            name: '测试2',
+            children: [
+                {
+                    id: 21,
+                    name: '测试1'
+                },
+                {
+                    id: 12,
+                    name: '测试2',
+                    children: [
+                        {
+                            id: 112,
+                            name: 'cs1',
+                            children: [
+                                {
+                                    id: 112,
+                                    name: 'csdsfsdfsd1'
+                                }
+                            ]
+                        },
+                        {
+                            id: 113,
+                            name: 'csdfg',
+
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+
+    var select = (function () {
+        Select.config= {};
+        Select.run = function (array, config) {
+            Select.config = config;
+            var selectId = document.getElementById(Select.config.id);
+            selectId.appendChild(Select.render(array));
+            Select.load();
+        }
+
+        Select.render = function (array) {
+            if (!Array.isArray(array) || array.length <= 0) { return "" }
+            var div = Select.CreatElement('div');
+            array.forEach(function (item, i) {
+                var span = Select.CreatElement('span');
+                var ul = Select.CreatElement('ul');
+                var li = Select.CreatElement('li');
+                var a = Select.CreatElement('a');
+                var img = Select.CreatElement('img');
+                span.innerHTML = item.name;
+                if (item.children) {
+                    a.appendChild(img);
+                } else {
+                    a.onclick = function () {
+                        Select.config.callBack(item.id)
+                    }
+                }
+
+                a.appendChild(span);
+                li.id = item.id;
+                li.appendChild(a);
+                if (item.children) {
+                    li.appendChild(Select.render(item.children));
+                }
+                ul.appendChild(li);
+                div.appendChild(ul);
+            });
+            return div;
+        }
+
+        Select.CreatElement = function (e) {
+            var eve = document.createElement(e);
+            switch (e) {
+                case 'ul':
+                    eve.className = 'selectUl';
+                    break;
+                case 'li':
+                    eve.className = 'selectLi';
+                    break;
+                case 'div':
+                    eve.className = 'accordion';
+                    break;
+                case 'img':
+                    eve.className = 'imgs';
+                    eve.src = './right.png';
+                    break;
+                case 'a':
+                    eve.className = 'selectImg';
+                    eve.href = "javascript:;";
+                    break;
+            }
+            return eve;
+        }
+
+        Select.load = function () {
+            var selectA = document.getElementsByClassName('selectLi');
+            for (let a of selectA) {
+                a.addEventListener('click', Select.AddEvtListener, false);
+            }
+        }
+
+        Select.AddEvtListener = function (e) {
+            e.stopPropagation();
+            var obox = this.children;
+            var img = obox[0].getElementsByClassName('imgs')[0];
+            if (obox[1]) {
+                if (obox[1].classList.contains('block')) {
+                    obox[1].classList.remove('block');
+                    img.src = Select.config.iocn1;
+                } else {
+                    obox[1].classList.add('block');
+                    img.src = Select.config.iocn2;
+                }
+            }
+        }
+
+        function Select() { };
+
+        // for nodejs
+        if (typeof module === "object" && typeof module.exports === "object") {
+            module.exports = Select;
+        }
+
+        return Select;
+    })();
+
+    var config = {
+        id:'selectId',
+        iocn1:'./right.png',
+        iocn2:'./down.png',
+        callBack:callBack,
+    }
+    select.run(list, config);
+
+    function callBack(e) {
+        console.log(e)
+    }
+</script>
+
+</html>
