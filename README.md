@@ -7,4 +7,5 @@
 import SelectEasy from 'SelectEasy';
 
 # 效果图
-https://github.com/lqdsjcom/select-easy/blob/master/demo.jpg
+![效果图](https://github.com/lqdsjcom/select-easy/blob/master/demo.jpg)
+
